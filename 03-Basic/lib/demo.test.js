@@ -29,5 +29,12 @@ describe('Basic of testing', () => {
                     done(err);
                 })
         });
+
+        it('should return a promise', () => {
+            return demo.addPromise(1,4)
+                .then(val => {
+                    expect(val).to.equal(5);
+                });
+        });
     });
 });
