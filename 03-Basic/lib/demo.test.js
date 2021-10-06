@@ -36,5 +36,10 @@ describe('Basic of testing', () => {
                     expect(val).to.equal(5);
                 });
         });
+
+        it('should test the promise by using async-await', async () => {
+            const result = await demo.addPromise(1, 4);
+            expect(result).to.equal(5);
+        });
     });
 });
