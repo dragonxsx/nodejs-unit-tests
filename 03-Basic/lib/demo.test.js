@@ -1,4 +1,8 @@
 const chai  = require('chai');
+const ChaiAsPromise = require('chai-as-promised');
+
+chai.use(ChaiAsPromise);
+
 const expect = chai.expect;
 
 const demo = require('./demo');
@@ -41,5 +45,9 @@ describe('Basic of testing', () => {
             const result = await demo.addPromise(1, 4);
             expect(result).to.equal(5);
         });
+
+        it('should test the promise by using chai-as-promised', async () => {
+            await expect(demo.addPromise(1, 4)).to.eventually.equal(5);
+        })
     });
 });
