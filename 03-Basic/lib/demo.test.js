@@ -18,5 +18,16 @@ describe('Basic of testing', () => {
                 done();
             })
         });
+
+        it('should test the promise', (done) => {
+            demo.addPromise(1,4)
+                .then(value => {
+                    expect(value).to.equal(5);
+                    done();
+                })
+                .catch(err => {
+                    done(err);
+                })
+        });
     });
 });
