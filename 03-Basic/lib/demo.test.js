@@ -63,6 +63,18 @@ describe('Basic of testing', () => {
             expect(spy.calledOnce).to.be.true;
             expect(spy).to.have.been.calledOnce;        // use sinon-chai to make calledOnce available
             spy.restore();                              // restore default behavior
+        });
+
+        it('should stub on console.warn', () => {
+            let stub = sinon.stub(console, 'warn');
+            // let stubWithFn = sinon.stub(console, 'warn').callsFake(() => {
+                console.log('message from stub');
+
+            demo.foo();
+
+            expect(stub).to.have.been.calledOnce;
+            // expect(stubWithFn).have.been.calledOnce.calledWith('console.warn was called');
+            stub.restore();
         })
     });
 });
