@@ -1,7 +1,9 @@
 const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
+chai.use(chaiAsPromised);
 chai.use(sinonChai);
 const expect = chai.expect;
 
@@ -14,6 +16,7 @@ const user = require('./models/user');
 describe('users', () => {
 
     let findStub;
+    let removeStub;
     let sampleArgs;
     let sampleUser;
 
@@ -27,6 +30,7 @@ describe('users', () => {
         }
 
         findStub = sandbox.stub(mongoose.Model, 'findById').resolves(sampleUser);
+        removeStub = sandbox.stub(User, 'remove').resolves('fake_remove_result');
     });
 
     afterEach(() => {
@@ -69,6 +73,29 @@ describe('users', () => {
                 expect(err.message).to.equal('fake');
                 done();
             });
+        });
+    });
+
+    context('delete', () => {
+        it('should check for an id', () => {
+           return users.delete(null).then(result => {
+               throw new Error('unexpected success');
+           }).catch(err => {
+               expect(err).to.exist;
+               expect(err).to.be.instanceOf(Error);
+               expect(err.message).to.equal('Invalid id');
+           });
+        });
+
+        it('should check for error using eventually', () => {
+            return expect(users.delete()).to.eventually.be.rejectedWith('Invalid id');
+        });
+
+        it('should call User.remove', async () => {
+            const result = await users.delete(123);
+            expect(removeStub).to.have.been.calledOnce;
+            expect(removeStub).to.have.been.calledWith({_id: 123});
+            expect(result).to.equal('fake_remove_result');
         });
     });
 });
