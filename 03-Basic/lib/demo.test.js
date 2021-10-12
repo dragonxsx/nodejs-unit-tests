@@ -2,13 +2,15 @@ const chai  = require('chai');
 const ChaiAsPromise = require('chai-as-promised');
 const sinon = require('sinon');
 const sinonchai = require('sinon-chai');
+const rewire = require('rewire');
 
 chai.use(ChaiAsPromise);
 chai.use(sinonchai);
 
 const expect = chai.expect;
 
-const demo = require('./demo');
+// const demo = require('./demo');
+var demo = rewire('./demo');
 
 describe('Basic of testing', () => {
     context('Test the demo module', () => {
@@ -76,5 +78,20 @@ describe('Basic of testing', () => {
             // expect(stubWithFn).have.been.calledOnce.calledWith('console.warn was called');
             stub.restore();
         })
+    });
+
+    context('stub private functions', () => {
+        it('should stub createFile', async () => {
+            let createStub = sinon.stub(demo, 'createFile').resolves('createFile_stub');
+            let callStub = sinon.stub().resolves('callDb_stub');
+
+            demo.__set__('callDB', callStub);
+            let result = await demo.bar('test.txt');
+
+            expect(result).to.equal('callDb_stub');
+            expect(createStub).to.have.been.calledOnce;
+            expect(createStub).to.have.been.calledWith('test.txt');
+            expect(callStub).to.have.been.calledOnce;
+        });
     });
 });
