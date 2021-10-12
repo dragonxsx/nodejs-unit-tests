@@ -1,7 +1,10 @@
 const chai  = require('chai');
 const ChaiAsPromise = require('chai-as-promised');
+const sinon = require('sinon');
+const sinonchai = require('sinon-chai');
 
 chai.use(ChaiAsPromise);
+chai.use(sinonchai);
 
 const expect = chai.expect;
 
@@ -48,6 +51,18 @@ describe('Basic of testing', () => {
 
         it('should test the promise by using chai-as-promised', async () => {
             await expect(demo.addPromise(1, 4)).to.eventually.equal(5);
+        })
+    });
+
+    context('test doubles', () => {
+        it('should spy on log', () => {
+            let spy = sinon.spy(console, 'log');
+
+            demo.foo();
+
+            expect(spy.calledOnce).to.be.true;
+            expect(spy).to.have.been.calledOnce;        // use sinon-chai to make calledOnce available
+            spy.restore();                              // restore default behavior
         })
     });
 });
