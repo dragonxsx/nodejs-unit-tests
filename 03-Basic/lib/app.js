@@ -7,7 +7,9 @@ const db = require('../config/database');
 const users = require('./users');
 const auth = require('./auth');
 
-mongoose.connect(db());
+if(mongoose.connection.readyState === 0) {
+    mongoose.connect(db());
+}
 
 app.use(bodyParser.urlencoded({
     extended: true
