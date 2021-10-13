@@ -19,6 +19,7 @@ describe('users', () => {
     let findStub;
     let removeStub;
     let mailerStub;
+    let resetPasswordStub;
     let sampleArgs;
     let sampleUser;
 
@@ -35,6 +36,7 @@ describe('users', () => {
         findStub = sandbox.stub(mongoose.Model, 'findById').resolves(sampleUser);
         removeStub = sandbox.stub(mongoose.Model, 'remove').resolves('fake_remove_result');
         mailerStub = sandbox.stub(mailer, 'sendWelcomeEmail').resolves('fake_email');
+        resetPasswordStub = sandbox.stub(mailer, 'sendPasswordResetEmail').resolves('fake_email');
     });
 
     afterEach(() => {
@@ -159,6 +161,25 @@ describe('users', () => {
             findStub.rejects(new Error('fake'));
 
             await expect(users.update(123, {name: '123'})).to.eventually.be.rejectedWith('fake');
+        });
+    });
+
+    context('resetPassword', () => {
+        it('should error if no password provided', async () => {
+            await expect(users.resetPassword()).to.eventually.be.rejectedWith('Invalid email');
+            await expect(users.resetPassword(null)).to.eventually.be.rejectedWith('Invalid email');
+        });
+
+        it('should call the mailer.sendPasswordResetEmail', async () => {
+            await users.resetPassword('a@abc.com');
+
+            expect(resetPasswordStub).to.have.been.calledWith('a@abc.com');
+        });
+
+        it('should reject errors', async () => {
+            resetPasswordStub.rejects(new Error('fake'));
+
+            await expect(users.resetPassword('a@abc.com')).to.eventually.be.rejectedWith('fake');
         });
     });
 });
