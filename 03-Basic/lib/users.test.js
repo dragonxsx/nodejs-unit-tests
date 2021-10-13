@@ -28,7 +28,8 @@ describe('users', () => {
         sampleUser = {
             id: 123,
             name: 'foo',
-            email: 'foo@bar.com'
+            email: 'foo@bar.com',
+            save: sandbox.stub().resolves()
         }
 
         findStub = sandbox.stub(mongoose.Model, 'findById').resolves(sampleUser);
@@ -138,6 +139,26 @@ describe('users', () => {
             saveStub.rejects(new Error('fake'));
             
             await expect(users.create(sampleUser)).to.eventually.rejectedWith('fake');
+        });
+    });
+
+    context('update', () => {
+        it('should find the user by id', async () => {
+            await users.update(123, {name: 'abc'});
+
+            expect(findStub).to.have.been.calledWith(123);
+        });
+
+        it('should save the user', async () => {
+            await users.update(123, {name: 'abc'});
+
+            expect(sampleUser.save).to.have.been.calledOnce;
+        });
+
+        it('should reject errors', async () => {
+            findStub.rejects(new Error('fake'));
+
+            await expect(users.update(123, {name: '123'})).to.eventually.be.rejectedWith('fake');
         });
     });
 });
