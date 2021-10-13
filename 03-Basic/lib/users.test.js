@@ -10,7 +10,7 @@ const expect = chai.expect;
 const rewire = require('rewire');
 var mongoose = require('mongoose');
 
-const users = rewire('./users');
+var users = rewire('./users');
 const User = require('./models/user');
 const mailer = require('./mailer');
 
@@ -32,12 +32,13 @@ describe('users', () => {
         }
 
         findStub = sandbox.stub(mongoose.Model, 'findById').resolves(sampleUser);
-        removeStub = sandbox.stub(User, 'remove').resolves('fake_remove_result');
+        removeStub = sandbox.stub(mongoose.Model, 'remove').resolves('fake_remove_result');
         mailerStub = sandbox.stub(mailer, 'sendWelcomeEmail').resolves('fake_email');
     });
 
     afterEach(() => {
         sandbox.restore();
+        users = rewire('./users');
     });
 
     context('get', () => {
